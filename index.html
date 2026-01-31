@@ -4,181 +4,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Messenger - User 2</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <style>
-        :root {
-            --primary-color: #42b72a; /* WhatsApp Green style for variety */
-            --bg-color: #f0f2f5;
-            --text-sent: #ffffff;
-            --bg-sent: #42b72a;
-            --bg-received: #e4e6eb;
-            --text-received: #050505;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
-        body { background: var(--bg-color); height: 100vh; display: flex; justify-content: center; align-items: center; }
-
-        .chat-wrapper { width: 100%; max-width: 600px; height: 90vh; background: #fff; border-radius: 20px; box-shadow: 0 12px 28px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; }
-
-        .chat-header { padding: 15px 20px; background: #fff; border-bottom: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: space-between; }
-        .user-info { display: flex; align-items: center; gap: 12px; }
-        .user-info img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); }
-        .online-wrapper { position: relative; width: 40px; height: 40px; }
-        
-        .messages-area { flex: 1; padding: 20px; overflow-y: auto; background: #fff; display: flex; flex-direction: column; gap: 8px; }
-        .msg-row { display: flex; width: 100%; margin-bottom: 4px; }
-        .msg-row.sent { justify-content: flex-end; }
-        .msg-row.received { justify-content: flex-start; }
-
-        .bubble { max-width: 70%; padding: 10px 16px; border-radius: 18px; font-size: 15px; line-height: 1.4; position: relative; }
-        .sent .bubble { background: var(--bg-sent); color: var(--text-sent); border-bottom-right-radius: 4px; }
-        .received .bubble { background: var(--bg-received); color: var(--text-received); border-bottom-left-radius: 4px; }
-
-        .bubble img { max-width: 100%; border-radius: 10px; margin-top: 8px; display: block; }
-        .timestamp { font-size: 11px; opacity: 0.7; margin-top: 4px; display: block; text-align: right; }
-
-        .typing { font-size: 12px; color: #65676b; padding: 5px 20px; display: none; }
-
-        .input-footer { padding: 15px; border-top: 1px solid rgba(0,0,0,0.1); background: #fff; }
-        .preview-bar { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-        .preview-item { background: #f0f2f5; padding: 5px 10px; border-radius: 10px; font-size: 12px; display: flex; align-items: center; gap: 5px; }
-
-        .controls { display: flex; align-items: center; gap: 10px; }
-        #messageInput { flex: 1; border: none; background: #f0f2f5; padding: 12px 18px; border-radius: 25px; outline: none; font-size: 15px; }
-        .btn-icon { cursor: pointer; color: var(--primary-color); font-size: 20px; transition: 0.2s; }
-        #fileBtn { display: none; }
+        :root { --p: #42b72a; --bg: #f0f2f5; }
+        /* STYLES ARE IDENTICAL TO CHAT 1 */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background: var(--bg); height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .app { width: 100%; max-width: 500px; height: 90vh; background: white; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .header { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; font-weight: bold; }
+        .status { width: 10px; height: 10px; background: #31a24c; border-radius: 50%; }
+        .box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .msg { max-width: 75%; padding: 12px 16px; border-radius: 20px; font-size: 15px; position: relative; }
+        .me { align-self: flex-end; background: var(--p); color: white; border-bottom-right-radius: 4px; }
+        .them { align-self: flex-start; background: #e4e6eb; color: black; border-bottom-left-radius: 4px; }
+        .msg img { max-width: 100%; border-radius: 10px; margin-top: 5px; }
+        .time { font-size: 10px; opacity: 0.6; display: block; text-align: right; margin-top: 4px; }
+        .footer { padding: 15px; border-top: 1px solid #eee; background: white; }
+        .in-row { display: flex; gap: 10px; align-items: center; }
+        #mIn { flex: 1; border: none; background: #f0f2f5; padding: 12px 18px; border-radius: 25px; outline: none; }
+        .btn { color: var(--p); font-size: 24px; cursor: pointer; border: none; background: none; }
+        #type { padding: 5px 20px; font-size: 12px; color: #888; display: none; }
     </style>
 </head>
 <body>
-
-<div class="chat-wrapper">
-    <div class="chat-header">
-        <div class="user-info">
-            <div class="online-wrapper">
-                <img src="https://i.pravatar.cc/150?u=user1" alt="U1">
-                <div style="background:#31a24c;" class="status-dot"></div>
-            </div>
-            <div>
-                <strong style="display: block;">User 1</strong>
-                <span style="font-size: 12px; color: #31a24c;">Online</span>
-            </div>
-        </div>
-        <div class="btn-icon">ⓘ</div>
-    </div>
-
-    <div class="messages-area" id="chatBox"></div>
-    <div class="typing" id="typingLabel">User 1 is typing...</div>
-
-    <div class="input-footer">
-        <div class="preview-bar" id="previewBar"></div>
-        <div class="controls">
-            <label for="fileBtn" class="btn-icon">⊕</label>
-            <input type="file" id="fileBtn" multiple onchange="handleFileSelect(event)">
-            <input type="text" id="messageInput" placeholder="Message User 1..." autocomplete="off">
-            <div class="btn-icon" onclick="sendMsg()">➤</div>
+<div class="app">
+    <div class="header"><div class="status"></div> User 1 (Live)</div>
+    <div class="box" id="chat"></div>
+    <div id="type">User 1 is typing...</div>
+    <div class="footer">
+        <div id="prev" style="font-size: 11px; margin-bottom: 5px;"></div>
+        <div class="in-row">
+            <input type="file" id="fIn" style="display:none" multiple onchange="hFiles(event)">
+            <button class="btn" onclick="document.getElementById('fIn').click()">⊕</button>
+            <input type="text" id="mIn" placeholder="Aa" autocomplete="off">
+            <button class="btn" onclick="send()">➤</button>
         </div>
     </div>
 </div>
-
-<audio id="pop" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3"></audio>
-
 <script>
-    const PUSHER_KEY = 'b4be98312628a4e18191';
-    const CLUSTER = 'sa1';
-    
-    const pusher = new Pusher(PUSHER_KEY, { cluster: CLUSTER, forceTLS: true });
-    const channel = pusher.subscribe('private-chat');
+    // YOUR PRODUCTION KEYS
+    const pusher = new Pusher('389324f692322b876741', { cluster: 'ap2', forceTLS: true });
+    const channel = pusher.subscribe('private-chat-prod');
+    const chat = document.getElementById('chat');
+    const mIn = document.getElementById('mIn');
+    let q = [];
 
-    let pendingFiles = [];
-    const chatBox = document.getElementById('chatBox');
-    const messageInput = document.getElementById('messageInput');
-    const typingLabel = document.getElementById('typingLabel');
-
-    function getHistory() { return JSON.parse(localStorage.getItem('chat_history') || '[]'); }
-    function saveHistory(history) { localStorage.setItem('chat_history', JSON.stringify(history)); }
+    const getH = () => JSON.parse(localStorage.getItem('cb_prod_logs') || '[]');
+    const setH = (d) => localStorage.setItem('cb_prod_logs', JSON.stringify(d));
 
     function render() {
-        chatBox.innerHTML = '';
-        getHistory().forEach(m => {
-            const div = document.createElement('div');
-            div.className = `msg-row ${m.sender === 'u2' ? 'sent' : 'received'}`;
-            
-            let filesHTML = '';
-            if(m.files) {
-                m.files.forEach(f => {
-                    if(f.type.includes('image')) filesHTML += `<img src="${f.data}">`;
-                    else filesHTML += `<div style="text-decoration:underline; font-size:12px;">📎 ${f.name}</div>`;
-                });
-            }
-
-            div.innerHTML = `<div class="bubble">${m.text ? `<div>${m.text}</div>` : ''}${filesHTML}<span class="timestamp">${m.time}</span></div>`;
-            chatBox.appendChild(div);
+        chat.innerHTML = '';
+        getH().forEach(m => {
+            const d = document.createElement('div');
+            d.className = `msg ${m.u === 'u2' ? 'me' : 'them'}`;
+            let fs = '';
+            if(m.f) m.f.forEach(f => { fs += f.type.includes('image') ? `<img src="${f.d}">` : `<div style="font-size:12px">📎 ${f.n}</div>`; });
+            d.innerHTML = `<div>${m.msg}</div>${fs}<span class="time">${m.t}</span>`;
+            chat.appendChild(d);
         });
-        chatBox.scrollTop = chatBox.scrollHeight;
+        chat.scrollTop = chat.scrollHeight;
     }
 
     channel.bind('client-msg', (data) => {
-        if(data.sender === 'u1') {
-            const history = getHistory();
-            history.push(data);
-            saveHistory(history);
-            render();
-            document.getElementById('pop').play();
-        }
+        if(data.u === 'u1') { const h = getH(); h.push(data); setH(h); render(); }
     });
 
     channel.bind('client-typing', (data) => {
-        if(data.sender === 'u1') typingLabel.style.display = data.isTyping ? 'block' : 'none';
+        if(data.u === 'u1') document.getElementById('type').style.display = data.is ? 'block' : 'none';
     });
 
-    function handleFileSelect(e) {
-        const files = Array.from(e.target.files);
-        files.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                pendingFiles.push({ name: file.name, type: file.type, data: ev.target.result });
-                const p = document.createElement('div');
-                p.className = 'preview-item';
-                p.innerText = file.name;
-                document.getElementById('previewBar').appendChild(p);
+    function hFiles(e) {
+        Array.from(e.target.files).forEach(f => {
+            const r = new FileReader();
+            r.onload = (ev) => {
+                q.push({ n: f.name, type: f.type, d: ev.target.result });
+                document.getElementById('prev').innerText += `[${f.name}] `;
             };
-            reader.readAsDataURL(file);
+            r.readAsDataURL(f);
         });
     }
 
-    function sendMsg() {
-        const text = messageInput.value.trim();
-        if(!text && pendingFiles.length === 0) return;
-
-        const msgData = {
-            sender: 'u2',
-            text: text,
-            files: pendingFiles,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        };
-
-        channel.trigger('client-msg', msgData);
-        const history = getHistory();
-        history.push(msgData);
-        saveHistory(history);
-        messageInput.value = '';
-        pendingFiles = [];
-        document.getElementById('previewBar').innerHTML = '';
+    function send() {
+        const val = mIn.value.trim();
+        if(!val && q.length === 0) return;
+        const msg = { u: 'u2', msg: val, f: q, t: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) };
+        channel.trigger('client-msg', msg);
+        const h = getH(); h.push(msg); setH(h);
+        mIn.value = ''; q = []; document.getElementById('prev').innerText = '';
         render();
-        channel.trigger('client-typing', { sender: 'u2', isTyping: false });
+        channel.trigger('client-typing', { u: 'u2', is: false });
     }
 
-    let typingTimer;
-    messageInput.addEventListener('input', () => {
-        channel.trigger('client-typing', { sender: 'u2', isTyping: true });
-        clearTimeout(typingTimer);
-        typingTimer = setTimeout(() => {
-            channel.trigger('client-typing', { sender: 'u2', isTyping: false });
-        }, 2000);
-    });
-
-    messageInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMsg(); });
+    mIn.addEventListener('input', () => { channel.trigger('client-typing', { u: 'u2', is: mIn.value.length > 0 }); });
+    mIn.addEventListener('keypress', (e) => { if(e.key === 'Enter') send(); });
     render();
 </script>
 </body>
