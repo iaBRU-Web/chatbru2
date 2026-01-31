@@ -3,36 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messenger - User 2</title>
+    <title>Chatbru - User 2</title>
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <style>
         :root { --p: #42b72a; --bg: #f0f2f5; }
-        /* STYLES ARE IDENTICAL TO CHAT 1 */
+        /* Same layout as User 1 */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body { background: var(--bg); height: 100vh; display: flex; justify-content: center; align-items: center; }
         .app { width: 100%; max-width: 500px; height: 90vh; background: white; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .header { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; font-weight: bold; }
-        .status { width: 10px; height: 10px; background: #31a24c; border-radius: 50%; }
+        .header { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; font-weight: bold; justify-content: space-between; }
+        .status { width: 10px; height: 10px; background: #31a24c; border-radius: 50%; display: inline-block; margin-right: 5px; }
         .box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
         .msg { max-width: 75%; padding: 12px 16px; border-radius: 20px; font-size: 15px; position: relative; }
         .me { align-self: flex-end; background: var(--p); color: white; border-bottom-right-radius: 4px; }
         .them { align-self: flex-start; background: #e4e6eb; color: black; border-bottom-left-radius: 4px; }
-        .msg img { max-width: 100%; border-radius: 10px; margin-top: 5px; }
+        .msg img { max-width: 100%; border-radius: 10px; margin-top: 5px; display: block; }
         .time { font-size: 10px; opacity: 0.6; display: block; text-align: right; margin-top: 4px; }
         .footer { padding: 15px; border-top: 1px solid #eee; background: white; }
         .in-row { display: flex; gap: 10px; align-items: center; }
         #mIn { flex: 1; border: none; background: #f0f2f5; padding: 12px 18px; border-radius: 25px; outline: none; }
         .btn { color: var(--p); font-size: 24px; cursor: pointer; border: none; background: none; }
-        #type { padding: 5px 20px; font-size: 12px; color: #888; display: none; }
+        #type { padding: 5px 20px; font-size: 12px; color: #888; height: 20px; }
     </style>
 </head>
 <body>
 <div class="app">
-    <div class="header"><div class="status"></div> User 1 (Live)</div>
+    <div class="header">
+        <span><div class="status"></div> User 1</span>
+        <button onclick="localStorage.clear(); location.reload();" style="font-size:10px; cursor:pointer;">Clear Chat</button>
+    </div>
     <div class="box" id="chat"></div>
-    <div id="type">User 1 is typing...</div>
+    <div id="type"></div>
     <div class="footer">
-        <div id="prev" style="font-size: 11px; margin-bottom: 5px;"></div>
+        <div id="prev" style="font-size: 11px; color: var(--p); margin-bottom: 5px;"></div>
         <div class="in-row">
             <input type="file" id="fIn" style="display:none" multiple onchange="hFiles(event)">
             <button class="btn" onclick="document.getElementById('fIn').click()">⊕</button>
@@ -42,15 +45,15 @@
     </div>
 </div>
 <script>
-    // YOUR PRODUCTION KEYS
+    // CREDENTIALS INSERTED
     const pusher = new Pusher('389324f692322b876741', { cluster: 'ap2', forceTLS: true });
     const channel = pusher.subscribe('private-chat-prod');
     const chat = document.getElementById('chat');
     const mIn = document.getElementById('mIn');
     let q = [];
 
-    const getH = () => JSON.parse(localStorage.getItem('cb_prod_logs') || '[]');
-    const setH = (d) => localStorage.setItem('cb_prod_logs', JSON.stringify(d));
+    const getH = () => JSON.parse(localStorage.getItem('prod_log_v1') || '[]');
+    const setH = (d) => localStorage.setItem('prod_log_v1', JSON.stringify(d));
 
     function render() {
         chat.innerHTML = '';
@@ -58,7 +61,7 @@
             const d = document.createElement('div');
             d.className = `msg ${m.u === 'u2' ? 'me' : 'them'}`;
             let fs = '';
-            if(m.f) m.f.forEach(f => { fs += f.type.includes('image') ? `<img src="${f.d}">` : `<div style="font-size:12px">📎 ${f.n}</div>`; });
+            if(m.f) m.f.forEach(f => { fs += f.t.includes('image') ? `<img src="${f.d}">` : `<div style="font-size:12px; text-decoration:underline;">📎 ${f.n}</div>`; });
             d.innerHTML = `<div>${m.msg}</div>${fs}<span class="time">${m.t}</span>`;
             chat.appendChild(d);
         });
@@ -70,15 +73,15 @@
     });
 
     channel.bind('client-typing', (data) => {
-        if(data.u === 'u1') document.getElementById('type').style.display = data.is ? 'block' : 'none';
+        if(data.u === 'u1') document.getElementById('type').innerText = data.is ? 'User 1 is typing...' : '';
     });
 
     function hFiles(e) {
         Array.from(e.target.files).forEach(f => {
             const r = new FileReader();
             r.onload = (ev) => {
-                q.push({ n: f.name, type: f.type, d: ev.target.result });
-                document.getElementById('prev').innerText += `[${f.name}] `;
+                q.push({ n: f.name, t: f.type, d: ev.target.result });
+                document.getElementById('prev').innerText += f.name + ' ';
             };
             r.readAsDataURL(f);
         });
