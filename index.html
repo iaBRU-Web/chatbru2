@@ -2,101 +2,97 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Chatbru - User 2</title>
-    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbru Live</title>
+    <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
     <style>
-        :root { --p: #42b72a; --bg: #f0f2f5; }
+        :root { --p1: #0084ff; --p2: #42b72a; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
-        body { background: var(--bg); height: 100vh; display: flex; justify-content: center; align-items: center; }
-        .app { width: 100%; max-width: 450px; height: 90vh; background: white; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .header { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; background: #fff; }
-        .user { display: flex; align-items: center; gap: 10px; font-weight: bold; }
-        .dot { width: 10px; height: 10px; background: #31a24c; border-radius: 50%; }
-        .box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: white; }
-        .msg { max-width: 75%; padding: 10px 15px; border-radius: 18px; font-size: 15px; position: relative; line-height: 1.4; }
-        .me { align-self: flex-end; background: var(--p); color: white; border-bottom-right-radius: 4px; }
+        body { background: #f0f2f5; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .chat-card { width: 100%; max-width: 400px; height: 85vh; background: white; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
+        .header { padding: 15px; border-bottom: 1px solid #eee; font-weight: bold; display: flex; justify-content: space-between; align-items: center; background: white; }
+        #view { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #fff; }
+        .msg { max-width: 80%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; position: relative; }
+        .me { align-self: flex-end; color: white; border-bottom-right-radius: 4px; }
         .them { align-self: flex-start; background: #e4e6eb; color: black; border-bottom-left-radius: 4px; }
-        .msg img { max-width: 100%; border-radius: 10px; margin-top: 5px; display: block; }
-        .time { font-size: 10px; opacity: 0.6; display: block; text-align: right; margin-top: 4px; }
-        .footer { padding: 15px; border-top: 1px solid #eee; background: white; }
-        .in-row { display: flex; gap: 10px; align-items: center; }
-        #mIn { flex: 1; border: none; background: #f0f2f5; padding: 12px 18px; border-radius: 25px; outline: none; }
-        .btn { color: var(--p); font-size: 24px; cursor: pointer; border: none; background: none; }
-        #type { padding: 0 20px 5px; font-size: 12px; color: #888; height: 15px; }
+        .footer { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 8px; background: white; }
+        input { flex: 1; border: none; background: #f0f2f5; padding: 10px 15px; border-radius: 20px; outline: none; }
+        button { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--p1); }
     </style>
 </head>
 <body>
-<div class="app">
+
+<div class="chat-card">
     <div class="header">
-        <div class="user"><div class="dot"></div> User 1</div>
-        <button onclick="if(confirm('Clear history?')){localStorage.clear();location.reload();}" style="color:red; background:none; border:none; cursor:pointer; font-size:12px;">Clear</button>
+        <span id="userTitle">Chatbru Loading...</span>
+        <button onclick="if(confirm('Clear?')){localStorage.clear();location.reload();}" style="font-size:10px; color:red;">Clear History</button>
     </div>
-    <div class="box" id="chat"></div>
-    <div id="type"></div>
+    <div id="view"></div>
     <div class="footer">
-        <div id="prev" style="font-size: 11px; color: var(--p); margin-bottom: 5px;"></div>
-        <div class="in-row">
-            <input type="file" id="fIn" style="display:none" multiple onchange="hFiles(event)">
-            <button class="btn" onclick="document.getElementById('fIn').click()">⊕</button>
-            <input type="text" id="mIn" placeholder="Aa" autocomplete="off">
-            <button class="btn" onclick="send()">➤</button>
-        </div>
+        <input type="text" id="mIn" placeholder="Aa" autocomplete="off">
+        <button onclick="send()">➤</button>
     </div>
 </div>
-<script>
-    const pusher = new Pusher('389324f692322b876741', { cluster: 'ap2', forceTLS: true });
-    const channel = pusher.subscribe('private-chat-prod');
-    const chat = document.getElementById('chat');
-    const mIn = document.getElementById('mIn');
-    let q = [];
 
-    const getH = () => JSON.parse(localStorage.getItem('chat_v3_log') || '[]');
-    const setH = (d) => localStorage.setItem('chat_v3_log', JSON.stringify(d));
+<script>
+    // YOUR LIVE KEY INTEGRATED
+    const MY_KEY = 'g5Xv-w.aQrh3w:TQbRupqZbZrXxXNBAbSSATFzGA5-307M7PFLZO7BdZA';
+
+    // Auto-detect which user this is based on the URL
+    const isU2 = window.location.href.includes('chatbru2');
+    const myID = isU2 ? 'u2' : 'u1';
+    const myColor = isU2 ? 'var(--p2)' : 'var(--p1)';
+    document.getElementById('userTitle').innerText = isU2 ? 'Chatbru - User 2 (Green)' : 'Chatbru - User 1 (Blue)';
+    if(isU2) document.querySelector('button').style.color = 'var(--p2)';
+
+    // Connect to Ably Cloud
+    const ably = new Ably.Realtime(MY_KEY);
+    const channel = ably.channels.get('main-chat');
+    const view = document.getElementById('view');
+    const mIn = document.getElementById('mIn');
+
+    // Local History
+    const getLogs = () => JSON.parse(localStorage.getItem('chat_v4') || '[]');
+    const saveLogs = (l) => localStorage.setItem('chat_v4', JSON.stringify(l));
 
     function render() {
-        chat.innerHTML = '';
-        getH().forEach(m => {
+        view.innerHTML = '';
+        getLogs().forEach(m => {
             const d = document.createElement('div');
-            d.className = `msg ${m.u === 'u2' ? 'me' : 'them'}`;
-            let fs = '';
-            if(m.f) m.f.forEach(f => { fs += f.t.includes('image') ? `<img src="${f.d}">` : `<div style="font-size:12px;">📎 ${f.n}</div>`; });
-            d.innerHTML = `<div>${m.msg}</div>${fs}<span class="time">${m.t}</span>`;
-            chat.appendChild(d);
+            d.className = `msg ${m.u === myID ? 'me' : 'them'}`;
+            if(m.u === myID) d.style.backgroundColor = myColor;
+            d.innerText = m.t;
+            view.appendChild(d);
         });
-        chat.scrollTop = chat.scrollHeight;
+        view.scrollTop = view.scrollHeight;
     }
 
-    channel.bind('client-msg', (data) => {
-        if(data.u === 'u1') { const h = getH(); h.push(data); setH(h); render(); }
+    // Subscribe to incoming messages
+    channel.subscribe('msg', (item) => {
+        if(item.data.u !== myID) {
+            const logs = getLogs();
+            logs.push(item.data);
+            saveLogs(logs);
+            render();
+        }
     });
 
-    channel.bind('client-typing', (data) => {
-        if(data.u === 'u1') document.getElementById('type').innerText = data.is ? 'User 1 is typing...' : '';
-    });
-
-    function hFiles(e) {
-        Array.from(e.target.files).forEach(f => {
-            const r = new FileReader();
-            r.onload = (ev) => {
-                q.push({ n: f.name, t: f.type, d: ev.target.result });
-                document.getElementById('prev').innerText += f.name + ' ';
-            };
-            r.readAsDataURL(f);
-        });
-    }
-
+    // Send logic
     function send() {
         const val = mIn.value.trim();
-        if(!val && q.length === 0) return;
-        const msg = { u: 'u2', msg: val, f: q, t: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) };
-        channel.trigger('client-msg', msg);
-        const h = getH(); h.push(msg); setH(h);
-        mIn.value = ''; q = []; document.getElementById('prev').innerText = '';
+        if(!val) return;
+
+        const packet = { u: myID, t: val };
+        channel.publish('msg', packet); // Send to other user via Ably
+
+        const logs = getLogs();
+        logs.push(packet); // Save to my history
+        saveLogs(logs);
+        
+        mIn.value = '';
         render();
-        channel.trigger('client-typing', { u: 'u2', is: false });
     }
 
-    mIn.addEventListener('input', () => { channel.trigger('client-typing', { u: 'u2', is: mIn.value.length > 0 }); });
     mIn.addEventListener('keypress', (e) => { if(e.key === 'Enter') send(); });
     render();
 </script>
