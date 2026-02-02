@@ -8,37 +8,30 @@
     <script src="https://cdn.ably.com/lib/ably-chat.umd.cjs-0.js"></script>
     <style>
         :root { --p: #42b72a; --bg: #f0f4f0; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
         body { background: var(--bg); height: 100vh; display: flex; justify-content: center; align-items: center; }
         .app { width: 100%; max-width: 420px; height: 95vh; background: white; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .head { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: white; z-index: 10; }
+        .head { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: white; }
         .logo-box { display: flex; align-items: center; gap: 10px; }
-        /* Logo B stays blue as requested */
         .logo-b { background: #0084ff; color: white; width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; }
-        
         #log { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #f7faf7; scroll-behavior: smooth; }
-        .msg { max-width: 75%; padding: 10px 14px; border-radius: 18px; font-size: 14px; position: relative; word-wrap: break-word; line-height: 1.4; animation: pop 0.2s ease-out; }
+        .msg { max-width: 75%; padding: 10px 14px; border-radius: 18px; font-size: 14px; position: relative; line-height: 1.4; animation: pop 0.2s ease-out; }
         @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        
         .u2 { align-self: flex-end; background: var(--p); color: white; border-bottom-right-radius: 4px; }
         .u1 { align-self: flex-start; background: #e4e6eb; color: black; border-bottom-left-radius: 4px; }
-        
-        .del { position: absolute; left: -30px; top: 50%; transform: translateY(-50%); cursor: pointer; border: none; background: none; font-size: 14px; opacity: 0; transition: 0.2s; }
+        .del { position: absolute; left: -30px; top: 50%; transform: translateY(-50%); cursor: pointer; border: none; background: none; opacity: 0; transition: 0.2s; }
         .msg:hover .del { opacity: 1; }
-        
-        .foot { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 8px; background: white; }
+        .foot { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 8px; }
         #mIn { flex: 1; border: none; background: #f0f2f5; padding: 12px 18px; border-radius: 25px; outline: none; }
-        #sendBtn { background: var(--p); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        #sendBtn:active { transform: scale(0.9); }
-
-        .credits { padding: 8px; font-size: 10px; color: #aaa; text-align: center; background: white; border-top: 1px solid #f9f9f9; }
+        #sendBtn { background: var(--p); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 18px; }
+        .credits { padding: 8px; font-size: 10px; color: #aaa; text-align: center; border-top: 1px solid #f9f9f9; }
     </style>
 </head>
 <body>
 <div class="app">
     <div class="head">
         <div class="logo-box"><div class="logo-b">B</div><strong>Chatbru 2</strong></div>
-        <button onclick="Notification.requestPermission()" style="cursor:pointer; border:none; background:none; font-size:18px;">🔔</button>
+        <button onclick="Notification.requestPermission()" style="cursor:pointer; border:none; background:none;">🔔</button>
     </div>
     <div id="log"></div>
     <div class="foot">
@@ -50,7 +43,6 @@
         @NO COPYRIGHT | @All rights reserved 2026
     </div>
 </div>
-
 <script>
     const KEY = 'FPJQew.OVLk-Q:LI6Gyar_BjKJasawIWCm_UXFbZjuYWsRzpkCrgXzXNM';
     const ably = new Ably.Realtime({ key: KEY, clientId: 'u2' });
@@ -58,46 +50,29 @@
     const room = chat.rooms.get('brumessenger-v1');
     const log = document.getElementById('log');
     const input = document.getElementById('mIn');
-    const sendBtn = document.getElementById('sendBtn');
+    const btn = document.getElementById('sendBtn');
 
     function render(m) {
         if (m.action === 'message.delete') { document.getElementById(m.serial)?.remove(); return; }
         const d = document.createElement('div');
-        d.id = m.serial;
-        d.className = `msg ${m.clientId}`;
-        d.innerHTML = `<span>${m.text}</span>`;
-        
+        d.id = m.serial; d.className = `msg ${m.clientId}`; d.innerText = m.text;
         if (m.clientId === 'u2') {
             const b = document.createElement('button'); b.className = 'del'; b.innerText = '🗑️';
             b.onclick = () => room.messages.delete(m); d.appendChild(b);
         }
-        
-        log.appendChild(d);
-        log.scrollTop = log.scrollHeight;
-
-        if(m.clientId === 'u1' && document.hidden) {
-            new Notification('Brumessenger', { body: `User 1: ${m.text}`, icon: 'https://cdn-icons-png.flaticon.com/512/733/733585.png' });
-        }
+        log.appendChild(d); log.scrollTop = log.scrollHeight;
+        if(m.clientId === 'u1' && document.hidden) new Notification('Brumessenger', { body: m.text });
     }
 
-    async function sendMessage() {
-        const val = input.value.trim();
-        if(!val) return;
-        input.value = '';
-        try {
-            await room.messages.send({ text: val });
-        } catch(e) { console.error("Send failed", e); }
-    }
+    const send = async () => {
+        const val = input.value.trim(); if(!val) return;
+        input.value = ''; await room.messages.send({ text: val });
+    };
 
-    sendBtn.onclick = sendMessage;
-    input.onkeydown = (e) => { if(e.key === 'Enter') sendMessage(); };
-
+    btn.onclick = send;
+    input.onkeydown = (e) => { if(e.key === 'Enter') send(); };
     room.messages.subscribe(e => render(e.message));
-    async function init() {
-        await room.attach();
-        const hist = await room.messages.history({ limit: 50 });
-        hist.items.reverse().forEach(render);
-    }
+    async function init() { await room.attach(); (await room.messages.history({limit:50})).items.reverse().forEach(render); }
     init();
 </script>
 </body>
