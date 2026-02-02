@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brumessenger | Chatbru 2</title>
     <script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
-    <script src="https://cdn.ably.com/lib/ably-chat.umd.cjs-0.js"></script>
     <style>
         :root { --p: #42b72a; --bg: #f0f4f0; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
@@ -14,13 +13,12 @@
         .head { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: white; }
         .logo-box { display: flex; align-items: center; gap: 10px; }
         .logo-b { background: #0084ff; color: white; width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; }
-        #log { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #f7faf7; scroll-behavior: smooth; }
-        .msg { max-width: 75%; padding: 10px 14px; border-radius: 18px; font-size: 14px; position: relative; line-height: 1.4; animation: pop 0.2s ease-out; }
-        @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        #log { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #f7faf7; }
+        
+        .msg { max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 14px; position: relative; line-height: 1.4; word-wrap: break-word; }
         .u2 { align-self: flex-end; background: var(--p); color: white; border-bottom-right-radius: 4px; }
         .u1 { align-self: flex-start; background: #e4e6eb; color: black; border-bottom-left-radius: 4px; }
-        .del { position: absolute; left: -30px; top: 50%; transform: translateY(-50%); cursor: pointer; border: none; background: none; opacity: 0; transition: 0.2s; }
-        .msg:hover .del { opacity: 1; }
+        
         .foot { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 8px; }
         #mIn { flex: 1; border: none; background: #f0f2f5; padding: 12px 18px; border-radius: 25px; outline: none; }
         #sendBtn { background: var(--p); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 18px; }
@@ -43,37 +41,49 @@
         @NO COPYRIGHT | @All rights reserved 2026
     </div>
 </div>
+
 <script>
     const KEY = 'FPJQew.OVLk-Q:LI6Gyar_BjKJasawIWCm_UXFbZjuYWsRzpkCrgXzXNM';
     const ably = new Ably.Realtime({ key: KEY, clientId: 'u2' });
-    const chat = new AblyChat.ChatClient(ably);
-    const room = chat.rooms.get('brumessenger-v1');
+    const channel = ably.channels.get('brumessenger-shared');
+    
     const log = document.getElementById('log');
     const input = document.getElementById('mIn');
     const btn = document.getElementById('sendBtn');
 
-    function render(m) {
-        if (m.action === 'message.delete') { document.getElementById(m.serial)?.remove(); return; }
+    function addMessage(sender, text) {
         const d = document.createElement('div');
-        d.id = m.serial; d.className = `msg ${m.clientId}`; d.innerText = m.text;
-        if (m.clientId === 'u2') {
-            const b = document.createElement('button'); b.className = 'del'; b.innerText = '🗑️';
-            b.onclick = () => room.messages.delete(m); d.appendChild(b);
+        d.className = `msg ${sender}`;
+        d.innerText = text;
+        log.appendChild(d);
+        log.scrollTop = log.scrollHeight;
+        
+        if (sender === 'u1' && document.hidden) {
+            new Notification('Brumessenger', { body: text });
         }
-        log.appendChild(d); log.scrollTop = log.scrollHeight;
-        if(m.clientId === 'u1' && document.hidden) new Notification('Brumessenger', { body: m.text });
     }
 
-    const send = async () => {
-        const val = input.value.trim(); if(!val) return;
-        input.value = ''; await room.messages.send({ text: val });
+    channel.subscribe('chat', (msg) => {
+        addMessage(msg.clientId, msg.data.text);
+    });
+
+    const send = () => {
+        const val = input.value.trim();
+        if(!val) return;
+        channel.publish('chat', { text: val });
+        input.value = '';
     };
 
     btn.onclick = send;
     input.onkeydown = (e) => { if(e.key === 'Enter') send(); };
-    room.messages.subscribe(e => render(e.message));
-    async function init() { await room.attach(); (await room.messages.history({limit:50})).items.reverse().forEach(render); }
-    init();
+
+    channel.history((err, result) => {
+        if (result) {
+            result.items.reverse().forEach(msg => {
+                addMessage(msg.clientId, msg.data.text);
+            });
+        }
+    });
 </script>
 </body>
 </html>
