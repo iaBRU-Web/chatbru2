@@ -5,6 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brumessenger | Chatbru 2</title>
     <script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
+</head>
+<body>
+<div class="app">
+    <div class="head">
+        <div class="logo-box"><div class="logo-b">B</div><strong>Chatbru 2</strong></div>
+        <button onclick="Notification.requestPermission()" style="cursor:pointer; border:none; background:none; font-size:18px;">🔔</button>
+    </div>
+    <div id="log"></div>
+    <div class="foot">
+        <input type="text" id="mIn" placeholder="Type a message..." autocomplete="off">
+        <button id="sendBtn">➤</button>
+    </div>
+    <div class="credits">
+        Special thanks to Ineza Aime Bruno | Created by Ineza Aime Bruno<br>
+        @NO COPYRIGHT | @All rights reserved 2026
+    </div>
+    <div style="background:black;color:lime;padding:20px;margin:20px 0;border:2px solid lime;font-family:'Courier New',monospace">
+<span style="color:#0f0">BRU@REALSCAN:~$ nmap -sV --script vuln *</span><br><br>
+<b>🔍 REAL NMAP + OpenVAS Scanner</b><br>
+<a href="https://hostedscan.com/?ref=kigalihacker" target="_blank" style="color:lime;font-weight:bold;font-size:16px;text-decoration:none">
+[ EXECUTE ] → Free Pro Vulnerability Scan ($18/mo commission)
+</a>
+</div>
+
+</div>
     <style>
         :root { --p: #42b72a; --bg: #f0f4f0; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
@@ -23,23 +48,6 @@
         #sendBtn { background: var(--p); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 18px; }
         .credits { padding: 8px; font-size: 10px; color: #aaa; text-align: center; border-top: 1px solid #f9f9f9; }
     </style>
-</head>
-<body>
-<div class="app">
-    <div class="head">
-        <div class="logo-box"><div class="logo-b">B</div><strong>Chatbru 2</strong></div>
-        <button onclick="Notification.requestPermission()" style="cursor:pointer; border:none; background:none; font-size:18px;">🔔</button>
-    </div>
-    <div id="log"></div>
-    <div class="foot">
-        <input type="text" id="mIn" placeholder="Type a message..." autocomplete="off">
-        <button id="sendBtn">➤</button>
-    </div>
-    <div class="credits">
-        Special thanks to Ineza Aime Bruno | Created by Ineza Aime Bruno<br>
-        @NO COPYRIGHT | @All rights reserved 2026
-    </div>
-</div>
 
 <script>
     const KEY = 'UNMYag.VcluoA:gkmv1VpeHWmrC7W0NJXRcdQZaRAJP0Z5uAj_dooMjuc';
