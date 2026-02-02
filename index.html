@@ -8,29 +8,41 @@
     <script src="https://cdn.ably.com/lib/ably-chat.umd.cjs-0.js"></script>
     <style>
         :root { --p: #42b72a; --bg: #f0f4f0; }
-        /* Style logic is same as Blue but with Green colors */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); height: 100vh; display: flex; justify-content: center; align-items: center; }
         .app { width: 100%; max-width: 420px; height: 95vh; background: white; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        /* Header with Logo */
         .head { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .logo-box { display: flex; align-items: center; gap: 10px; }
+        .logo-b { background: #0084ff; color: white; width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        
         #log { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #f7faf7; }
         .msg { max-width: 80%; padding: 10px 14px; border-radius: 18px; font-size: 14px; position: relative; }
         .u2 { align-self: flex-end; background: var(--p); color: white; border-bottom-right-radius: 4px; }
         .u1 { align-self: flex-start; background: #e4e6eb; color: black; border-bottom-left-radius: 4px; }
         .del { position: absolute; left: -25px; top: 8px; cursor: pointer; border: none; background: none; font-size: 14px; display: none; }
         .msg:hover .del { display: block; }
-        .foot { padding: 15px; border-top: 1px solid #eee; }
-        input { width: 85%; border: none; background: #f0f2f5; padding: 10px 15px; border-radius: 20px; outline: none; }
-        .credits { padding: 10px; font-size: 10px; color: #888; text-align: center; line-height: 1.4; border-top: 1px solid #f9f9f9; }
+        
+        .foot { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 8px; }
+        input { flex: 1; border: none; background: #f0f2f5; padding: 10px 15px; border-radius: 20px; outline: none; }
+        
+        .credits { padding: 10px; font-size: 10px; color: #888; text-align: center; line-height: 1.4; border-top: 1px solid #f9f9f9; background: white; }
     </style>
 </head>
 <body>
 <div class="app">
-    <div class="head"><strong>Chatbru 2</strong> <button onclick="Notification.requestPermission()">🔔</button></div>
+    <div class="head">
+        <div class="logo-box">
+            <div class="logo-b">B</div>
+            <strong>Chatbru 2</strong>
+        </div>
+        <button onclick="Notification.requestPermission()">🔔</button>
+    </div>
     <div id="log"></div>
     <div class="foot">
         <input type="text" id="mIn" placeholder="Type..." autocomplete="off">
-        <button onclick="send()" style="border:none; background:none; font-size:20px; color:var(--p); cursor:pointer; width:10%;">➤</button>
+        <button onclick="send()" style="border:none; background:none; font-size:20px; color:var(--p); cursor:pointer;">➤</button>
     </div>
     <div class="credits">
         Special thanks to Ineza Aime Bruno<br>
