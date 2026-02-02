@@ -3,98 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbru Live</title>
-    <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
+    <title>Brumessenger | Chatbru 2</title>
+    <script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
+    <script src="https://cdn.ably.com/lib/ably-chat.umd.cjs-0.js"></script>
     <style>
-        :root { --p1: #0084ff; --p2: #42b72a; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
-        body { background: #f0f2f5; height: 100vh; display: flex; justify-content: center; align-items: center; }
-        .chat-card { width: 100%; max-width: 400px; height: 85vh; background: white; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
-        .header { padding: 15px; border-bottom: 1px solid #eee; font-weight: bold; display: flex; justify-content: space-between; align-items: center; background: white; }
-        #view { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #fff; }
-        .msg { max-width: 80%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; position: relative; }
-        .me { align-self: flex-end; color: white; border-bottom-right-radius: 4px; }
-        .them { align-self: flex-start; background: #e4e6eb; color: black; border-bottom-left-radius: 4px; }
-        .footer { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 8px; background: white; }
-        input { flex: 1; border: none; background: #f0f2f5; padding: 10px 15px; border-radius: 20px; outline: none; }
-        button { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--p1); }
+        :root { --p: #42b72a; --bg: #f0f4f0; }
+        /* Style logic is same as Blue but with Green colors */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .app { width: 100%; max-width: 420px; height: 95vh; background: white; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .head { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        #log { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #f7faf7; }
+        .msg { max-width: 80%; padding: 10px 14px; border-radius: 18px; font-size: 14px; position: relative; }
+        .u2 { align-self: flex-end; background: var(--p); color: white; border-bottom-right-radius: 4px; }
+        .u1 { align-self: flex-start; background: #e4e6eb; color: black; border-bottom-left-radius: 4px; }
+        .del { position: absolute; left: -25px; top: 8px; cursor: pointer; border: none; background: none; font-size: 14px; display: none; }
+        .msg:hover .del { display: block; }
+        .foot { padding: 15px; border-top: 1px solid #eee; }
+        input { width: 85%; border: none; background: #f0f2f5; padding: 10px 15px; border-radius: 20px; outline: none; }
+        .credits { padding: 10px; font-size: 10px; color: #888; text-align: center; line-height: 1.4; border-top: 1px solid #f9f9f9; }
     </style>
 </head>
 <body>
-
-<div class="chat-card">
-    <div class="header">
-        <span id="userTitle">Chatbru Loading...</span>
-        <button onclick="if(confirm('Clear?')){localStorage.clear();location.reload();}" style="font-size:10px; color:red;">Clear History</button>
+<div class="app">
+    <div class="head"><strong>Chatbru 2</strong> <button onclick="Notification.requestPermission()">🔔</button></div>
+    <div id="log"></div>
+    <div class="foot">
+        <input type="text" id="mIn" placeholder="Type..." autocomplete="off">
+        <button onclick="send()" style="border:none; background:none; font-size:20px; color:var(--p); cursor:pointer; width:10%;">➤</button>
     </div>
-    <div id="view"></div>
-    <div class="footer">
-        <input type="text" id="mIn" placeholder="Aa" autocomplete="off">
-        <button onclick="send()">➤</button>
+    <div class="credits">
+        Special thanks to Ineza Aime Bruno<br>
+        Created by Ineza Aime Bruno<br>
+        @NO COPYRIGHT | @All rights reserved 2026
     </div>
 </div>
-
 <script>
-    // YOUR LIVE KEY INTEGRATED
-    const MY_KEY = 'g5Xv-w.aQrh3w:TQbRupqZbZrXxXNBAbSSATFzGA5-307M7PFLZO7BdZA';
+    const KEY = 'FPJQew.OVLk-Q:LI6Gyar_BjKJasawIWCm_UXFbZjuYWsRzpkCrgXzXNM';
+    const ably = new Ably.Realtime({ key: KEY, clientId: 'u2' });
+    const chat = new AblyChat.ChatClient(ably);
+    const room = chat.rooms.get('brumessenger-v1');
+    const log = document.getElementById('log');
 
-    // Auto-detect which user this is based on the URL
-    const isU2 = window.location.href.includes('chatbru2');
-    const myID = isU2 ? 'u2' : 'u1';
-    const myColor = isU2 ? 'var(--p2)' : 'var(--p1)';
-    document.getElementById('userTitle').innerText = isU2 ? 'Chatbru - User 2 (Green)' : 'Chatbru - User 1 (Blue)';
-    if(isU2) document.querySelector('button').style.color = 'var(--p2)';
-
-    // Connect to Ably Cloud
-    const ably = new Ably.Realtime(MY_KEY);
-    const channel = ably.channels.get('main-chat');
-    const view = document.getElementById('view');
-    const mIn = document.getElementById('mIn');
-
-    // Local History
-    const getLogs = () => JSON.parse(localStorage.getItem('chat_v4') || '[]');
-    const saveLogs = (l) => localStorage.setItem('chat_v4', JSON.stringify(l));
-
-    function render() {
-        view.innerHTML = '';
-        getLogs().forEach(m => {
-            const d = document.createElement('div');
-            d.className = `msg ${m.u === myID ? 'me' : 'them'}`;
-            if(m.u === myID) d.style.backgroundColor = myColor;
-            d.innerText = m.t;
-            view.appendChild(d);
-        });
-        view.scrollTop = view.scrollHeight;
-    }
-
-    // Subscribe to incoming messages
-    channel.subscribe('msg', (item) => {
-        if(item.data.u !== myID) {
-            const logs = getLogs();
-            logs.push(item.data);
-            saveLogs(logs);
-            render();
+    function render(m) {
+        if (m.action === 'message.delete') { document.getElementById(m.serial)?.remove(); return; }
+        const d = document.createElement('div');
+        d.id = m.serial; d.className = `msg ${m.clientId}`; d.innerText = m.text;
+        if (m.clientId === 'u2') {
+            const b = document.createElement('button'); b.className = 'del'; b.innerText = '🗑️';
+            b.onclick = () => room.messages.delete(m); d.appendChild(b);
         }
-    });
-
-    // Send logic
-    function send() {
-        const val = mIn.value.trim();
-        if(!val) return;
-
-        const packet = { u: myID, t: val };
-        channel.publish('msg', packet); // Send to other user via Ably
-
-        const logs = getLogs();
-        logs.push(packet); // Save to my history
-        saveLogs(logs);
-        
-        mIn.value = '';
-        render();
+        log.appendChild(d); log.scrollTop = log.scrollHeight;
+        if(m.clientId === 'u1' && document.hidden) new Notification('Chatbru 1', { body: m.text });
     }
-
-    mIn.addEventListener('keypress', (e) => { if(e.key === 'Enter') send(); });
-    render();
+    room.messages.subscribe(e => render(e.message));
+    async function init() { await room.attach(); (await room.messages.history({limit:50})).items.reverse().forEach(render); }
+    async function send() { 
+        const i = document.getElementById('mIn'); if(!i.value) return;
+        await room.messages.send({text:i.value}); i.value=''; 
+    }
+    document.getElementById('mIn').onkeypress = (e) => e.keyCode == 13 && send();
+    init();
 </script>
 </body>
 </html>
