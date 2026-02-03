@@ -2,51 +2,192 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Brumessenger | Chatbru 2</title>
-    <script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
+    <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
+    
 </head>
 <body>
+
 <div class="app">
     <div class="head">
-        <div class="logo-box"><div class="logo-b">B</div><strong>Chatbru 2</strong></div>
-        <button onclick="Notification.requestPermission()" style="cursor:pointer; border:none; background:none; font-size:18px;">🔔</button>
+        <div class="logo-box">
+            <div class="logo-b">B</div>
+            <strong>Chatbru 2</strong>
+        </div>
+        <button onclick="Notification.requestPermission()" style="cursor:pointer; border:none; background:none; font-size:20px;">🔔</button>
     </div>
+
     <div id="log"></div>
+
+    <div class="ad-box">
+        <span style="color:#0f0">BRU@REALSCAN:~$ nmap -sV --script vuln *</span><br>
+        <b>🔍 REAL NMAP + OpenVAS Scanner</b><br>
+        <a href="https://hostedscan.com/?ref=kigalihacker" target="_blank">
+            [ EXECUTE ] → Free Pro Vulnerability Scan
+        </a>
+    </div>
+
     <div class="foot">
         <input type="text" id="mIn" placeholder="Type a message..." autocomplete="off">
         <button id="sendBtn">➤</button>
     </div>
+    
     <div class="credits">
-        Special thanks to Ineza Aime Bruno | Created by Ineza Aime Bruno<br>
-        @NO COPYRIGHT | @All rights reserved 2026
+        Created by Ineza Aime Bruno<br>
+        @All rights reserved 2026
     </div>
-    <div style="background:black;color:lime;padding:20px;margin:20px 0;border:2px solid lime;font-family:'Courier New',monospace">
-<span style="color:#0f0">BRU@REALSCAN:~$ nmap -sV --script vuln *</span><br><br>
-<b>🔍 REAL NMAP + OpenVAS Scanner</b><br>
-<a href="https://hostedscan.com/?ref=kigalihacker" target="_blank" style="color:lime;font-weight:bold;font-size:16px;text-decoration:none">
-[ EXECUTE ] → Free Pro Vulnerability Scan ($18/mo commission)
-</a>
-</div>
-
 </div>
     <style>
-        :root { --p: #42b72a; --bg: #f0f4f0; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { background: var(--bg); height: 100vh; display: flex; justify-content: center; align-items: center; }
-        .app { width: 100%; max-width: 420px; height: 95vh; background: white; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .head { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: white; }
-        .logo-box { display: flex; align-items: center; gap: 10px; }
-        .logo-b { background: #0084ff; color: white; width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; }
-        #log { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #f7faf7; scroll-behavior: smooth; }
-        .msg { max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 14px; position: relative; line-height: 1.4; word-wrap: break-word; animation: pop 0.2s ease-out; }
-        @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .u2 { align-self: flex-end; background: var(--p); color: white; border-bottom-right-radius: 4px; }
-        .u1 { align-self: flex-start; background: #e4e6eb; color: black; border-bottom-left-radius: 4px; }
-        .foot { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 8px; background: white; }
-        #mIn { flex: 1; border: none; background: #f0f2f5; padding: 12px 18px; border-radius: 25px; outline: none; }
-        #sendBtn { background: var(--p); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 18px; }
-        .credits { padding: 8px; font-size: 10px; color: #aaa; text-align: center; border-top: 1px solid #f9f9f9; }
+        :root { 
+            --p: #42b72a; 
+            --bg: #f0f4f0; 
+            --msg-them: #e4e6eb;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            touch-action: manipulation;
+        }
+
+        body { 
+            background: var(--bg); 
+            height: 100dvh; 
+            width: 100vw; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden;
+            position: fixed;
+        }
+
+        .app { 
+            width: 100%; 
+            max-width: 500px; 
+            height: 100%; 
+            background: white; 
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+        }
+
+        @media (min-width: 600px) {
+            .app {
+                height: 90vh;
+                border-radius: 20px;
+                overflow: hidden;
+            }
+        }
+
+        .head { 
+            padding: 16px; 
+            border-bottom: 1px solid #eee; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: #fff;
+        }
+
+        .logo-box { display: flex; align-items: center; gap: 12px; }
+        .logo-b { 
+            background: var(--p); 
+            color: white; 
+            width: 36px; 
+            height: 36px; 
+            border-radius: 10px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold; 
+            font-size: 20px; 
+        }
+
+        #log { 
+            flex: 1; 
+            padding: 20px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 14px; 
+            background: #f7faf7;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .msg { 
+            max-width: 80%; 
+            padding: 12px 16px; 
+            border-radius: 20px; 
+            font-size: 15px; 
+            line-height: 1.5; 
+            word-wrap: break-word; 
+            animation: slideUp 0.3s ease;
+        }
+
+        .u2 { 
+            align-self: flex-end; 
+            background: var(--p); 
+            color: white; 
+            border-bottom-right-radius: 4px; 
+        }
+
+        .u1 { 
+            align-self: flex-start; 
+            background: var(--msg-them); 
+            color: #050505; 
+            border-bottom-left-radius: 4px; 
+        }
+
+        .ad-box {
+            background: black;
+            color: lime;
+            padding: 15px;
+            margin: 10px;
+            border: 2px solid lime;
+            font-family: 'Courier New', monospace;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .ad-box a { color: lime; font-weight: bold; text-decoration: none; display: block; margin-top: 8px; }
+
+        .foot { 
+            padding: 15px; 
+            border-top: 1px solid #eee; 
+            display: flex; 
+            gap: 10px; 
+            background: white;
+            padding-bottom: calc(15px + env(safe-area-inset-bottom));
+        }
+
+        #mIn { 
+            flex: 1; 
+            border: none; 
+            background: #f0f2f5; 
+            padding: 12px 20px; 
+            border-radius: 25px; 
+            outline: none; 
+            font-size: 16px;
+        }
+
+        #sendBtn { 
+            background: var(--p); 
+            color: white; 
+            border: none; 
+            width: 48px; 
+            height: 48px; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .credits { padding-bottom: 8px; font-size: 10px; color: #aaa; text-align: center; }
     </style>
 
 <script>
@@ -64,24 +205,33 @@
         d.innerText = text;
         log.appendChild(d);
         log.scrollTop = log.scrollHeight;
-        if (sender === 'u1' && document.hidden) new Notification('Chatbru 1', { body: text });
+        
+        if (sender === 'u1' && document.hidden) {
+            new Notification('Brumessenger', { body: text });
+        }
     }
 
-    channel.subscribe('chat', (m) => addMsg(m.clientId, m.data.text));
+    channel.subscribe('chat', (m) => {
+        addMsg(m.clientId, m.data.text);
+    });
 
-    const send = () => {
+    const sendMessage = () => {
         const val = input.value.trim();
         if(!val) return;
         channel.publish('chat', { text: val });
         input.value = '';
+        input.focus();
     };
 
-    btn.onclick = send;
-    input.onkeydown = (e) => { if(e.key === 'Enter') send(); };
+    btn.onclick = sendMessage;
+    input.onkeydown = (e) => { if(e.key === 'Enter') sendMessage(); };
 
     channel.history((err, res) => {
-        if (res) res.items.reverse().forEach(m => addMsg(m.clientId, m.data.text));
+        if (res) {
+            res.items.reverse().forEach(m => addMsg(m.clientId, m.data.text));
+        }
     });
 </script>
+
 </body>
 </html>
